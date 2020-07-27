@@ -1,6 +1,8 @@
 ### Hi there 👋
 
-Noobie here. Pls, do not stomp me.
+🤔 Noobie's first package here. 
+😄 Pls, do not stomp me.
+⚡ KekW
 <!--
 **icedumpy/icedumpy** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
