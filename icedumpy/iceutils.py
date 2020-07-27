@@ -15,7 +15,7 @@ def kappa_from_cnf_matrix(cnf_matrix):
 
     Returns
     -------
-    kappa coeffieient
+    kappa coefficient
     """
     N = cnf_matrix.sum()
     M = np.diag(cnf_matrix).sum()
@@ -23,4 +23,5 @@ def kappa_from_cnf_matrix(cnf_matrix):
     C = cnf_matrix.sum(axis=0)
     GC = np.dot(G, C)
     kappa_from_cnf_matrix = (N*M - GC)/(np.power(N, 2) - GC)
+	
     return kappa_from_cnf_matrix
