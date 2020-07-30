@@ -1,9 +1,9 @@
 from setuptools import setup
 setup(name='icedumpy',
-      version='0.1',
-      description='Testing package for PIER',
+      version='0.0',
+      description="Ice's first package",
       url='#',
-      author='pongporamat',
+      author='Pongporamat',
       author_email='pongporamat.c@ku.th',
       license='None',
       packages=['icedumpy'],

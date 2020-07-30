@@ -11,7 +11,7 @@ from . import io_tools
 
 def create_tiff(path_save, im, projection, geotransform, drivername, list_band_name=None, nodata = -9999, channel_first=True, dtype=gdal.GDT_Float32):
     """
-    Create raster from an image.
+    Write raster from image (can use with gdal and rasterio raster).
 
     Parameters
     ----------
@@ -19,10 +19,10 @@ def create_tiff(path_save, im, projection, geotransform, drivername, list_band_n
         Raster's save path.
     im: 3D numpy array (channel, height, width) or (height, width, channel)
         Image to be saved to raster.
-    projection: raster.GetProjection()
-        Projection of the saved raster.
-    geotransform: geotransform (raster.GetGeoTransform())
-        Geotransform of the saved raster.
+    projection: (gdal)raster.GetProjection() or (rasterio)raster.crs.to_wkt()
+        Projection of the raster.
+    geotransform: (gdal)raster.GetGeoTransform() or (rasterio)raster.get_transform()
+        Geotransform of the raster.
     drivername: str
         Name of gdal driver ex. "GTiff", "ENVI" from https://gdal.org/drivers/raster/index.html
     list_band_name: list of string (optional), default None
@@ -356,3 +356,4 @@ def create_flood_map(root_save, root_raster, path_mask, path_model, threshold, p
                     nodata= 0,
                     dtype = gdal.GDT_Byte,
                     channel_first=True)
+    
