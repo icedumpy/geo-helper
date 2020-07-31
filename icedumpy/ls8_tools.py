@@ -4,7 +4,7 @@ from osgeo import gdal
 import numpy as np
 import pandas as pd
 from . import df_tools
-from . import gdf_tools
+from . import geo_tools
 from . import io_tools
 
 def create_landsat8_color_infrared_img(root_raster, channel=1, rgb_or_bgr='rgb', channel_first=True):
@@ -106,7 +106,7 @@ def create_rice_mask(path_save, root_vew, root_df_ls8, pathrow, raster, to_crs):
     df_vew = df_tools.clean_and_process_vew(df_vew, list_new_polygon_id)
 
     # Convert dataframe to geodataframe
-    gdf_vew = gdf_tools.convert_to_geodataframe(df_vew[['new_polygon_id', 'final_plant_date', 'START_DATE', 'loss_ratio', 'final_polygon']],  to_crs=to_crs)
+    gdf_vew = geo_tools.convert_to_geodataframe(df_vew[['new_polygon_id', 'final_plant_date', 'START_DATE', 'loss_ratio', 'final_polygon']],  to_crs=to_crs)
     gdf_vew['START_DATE'] = gdf_vew['START_DATE'].astype(str)
     gdf_vew['final_plant_date'] = gdf_vew['final_plant_date'].astype(str)
     gdf_vew = gdf_vew[['new_polygon_id', 'final_plant_date', 'START_DATE', 'loss_ratio', 'geometry']]
@@ -170,7 +170,7 @@ def create_flood_map(root_save, root_raster, path_mask, path_model, threshold, p
 
     # Initial parameters for predicted flood map
     raster = dict_raster[bands[0]]
-    raster_date = pd.DataFrame(gdf_tools.get_raster_date(raster, datetimetype='datetime', dtype='gdal'), columns=['date'])
+    raster_date = pd.DataFrame(geo_tools.get_raster_date(raster, datetimetype='datetime', dtype='gdal'), columns=['date'])
     raster_date['year'] = raster_date['date'].dt.year
     raster_date.index = raster_date.index+1
 
@@ -202,7 +202,7 @@ def create_flood_map(root_save, root_raster, path_mask, path_model, threshold, p
             flood_im[idx, row_rice, col_rice] = pred_thresh # [0 non-flood, 1 flood, 2 no data]
             flood_im[flood_im==0] = val_noflood
 
-        gdf_tools.create_tiff(
+        geo_tools.create_tiff(
             path_save = path_save,
             im = flood_im,
             projection = raster.GetProjection(),
