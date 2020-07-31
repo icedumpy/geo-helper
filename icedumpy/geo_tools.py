@@ -3,6 +3,7 @@ import numpy as np
 import geopandas as gpd
 from shapely import wkt
 from osgeo import gdal
+import rasterio
 
 def create_tiff(path_save, im, projection, geotransform, drivername, list_band_name=None, nodata = -9999, channel_first=True, dtype=gdal.GDT_Float32):
     """
@@ -26,7 +27,7 @@ def create_tiff(path_save, im, projection, geotransform, drivername, list_band_n
         Nodata value of the raster.
     channel_first: boolean (optional), default True
         Image is channel first or not.
-    dtype: gdal datatype (optional), default GDT_Float32
+    dtype: str or gdal datatype (optional), default GDT_Float32
         Datatype of the saved raster (gdal.GDT_xxx)
 
     Examples
@@ -45,8 +46,23 @@ def create_tiff(path_save, im, projection, geotransform, drivername, list_band_n
     -------
     None
     """
-
-    if len(im.shape)==2:
+    if type(dtype) == str:
+        if dtype == "uint8":
+            dtype = gdal.GDT_Byte
+        elif dtype == "uint16":
+            dtype = gdal.GDT_UInt16
+        elif dtype == "uint32":
+            dtype = gdal.GDT_UInt32
+        elif dtype == "int16":
+            dtype = gdal.GDT_Int16
+        elif dtype == "int32":
+            dtype = gdal.GDT_Int32
+        elif dtype == "float32":
+            dtype = gdal.GDT_Float32
+        elif dtype == "float64":
+            dtype = gdal.GDT_Float64
+    
+    if len(im.shape) == 2:
         im = np.expand_dims(im, 0)
     if not channel_first:
         im = np.moveaxis(im, -1, 0)
@@ -72,7 +88,7 @@ def create_tiff(path_save, im, projection, geotransform, drivername, list_band_n
     del driver
 
 
-def get_raster_date(raster, datetimetype, dtype):
+def get_raster_date(raster, datetimetype):
     """
     Get band's date from each band of raster.
 
@@ -82,8 +98,6 @@ def get_raster_date(raster, datetimetype, dtype):
         Raster data.
     datetimetype: str
         Want return to be 'date' or 'datetime' format.
-    dtype: str
-        raster data type is 'gdal' or 'rasterio'.
 
     Examples
     --------
@@ -94,12 +108,12 @@ def get_raster_date(raster, datetimetype, dtype):
     Numpy array of raster date/datetime
     """
 
-    if dtype=='rasterio':
+    if type(raster) == rasterio.io.DatasetReader:
         try:
             raster_date = [datetime.datetime(int(item[-8:-4]), int(item[-4:-2]), int(item[-2:])) for item in raster.descriptions]
         except:
             raster_date = [datetime.datetime(int(item.split('-')[0]), int(item.split('-')[1]), int(item.split('-')[2])) for item in raster.descriptions]
-    elif dtype=='gdal':
+    elif type(raster) == gdal.Dataset:
         try:
             raster_date = [datetime.datetime(int(raster.GetRasterBand(i+1).GetDescription()[-8:-4]), int(raster.GetRasterBand(i+1).GetDescription()[-4:-2]), int(raster.GetRasterBand(i+1).GetDescription()[-2:])) for i in range(raster.RasterCount)]
         except:
