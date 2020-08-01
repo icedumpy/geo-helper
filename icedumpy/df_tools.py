@@ -149,13 +149,18 @@ def load_mapping(root_mapping, list_p=None, list_pathrow=None):
 
     Returns
     -------
-    Concatenated mapping dataframe
+    Concatenated mapping dataframe, list_p (if input list_pathrow) vise versa
     """
     if list_p is not None:
+        # list_other == list_pathrow
+        list_other = [os.path.splitext(file)[0].split("_")[-1] for file in os.listdir(root_mapping) if os.path.splitext(file)[0].split("_")[-2][1:] in list_p]
         df = pd.concat([pd.read_parquet(os.path.join(root_mapping, file)) for file in os.listdir(root_mapping) if os.path.splitext(file)[0].split("_")[-2][1:] in list_p], ignore_index=True)
+    
     elif list_pathrow is not None:
+        # List_other == list_p
+        list_other = [os.path.splitext(file)[0].split("_")[-2][1:] for file in os.listdir(root_mapping) if os.path.splitext(file)[0].split("_")[-1] in list_pathrow]
         df = pd.concat([pd.read_parquet(os.path.join(root_mapping, file)) for file in os.listdir(root_mapping) if os.path.splitext(file)[0].split("_")[-1] in list_pathrow], ignore_index=True)
-    return df 
+    return df, list_other
 
 def load_vew(root_vew, list_p):
     '''
