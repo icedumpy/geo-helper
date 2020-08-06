@@ -161,3 +161,33 @@ def convert_to_geodataframe(df, polygon_column='final_polygon', crs={'init':'eps
         gdf = gdf.to_crs(to_crs)
     return gdf
 
+def gdal_warp(path_after_warp, path_before_warp, outputBounds):
+    """
+    Warp (reproject) raster to the selected outputBounds
+    
+    Parameters
+    ----------
+    path_after_warp: str
+        Path of the raster after warp (save path).
+    path_before_warp: str
+        Path of the raster before warp.
+    outputBounds: tuple of float
+        (x_min, y_min, x_max, y_max)
+
+    Examples
+    --------
+    >>> 
+
+    Returns
+    -------
+    none
+    """
+    # srs = osr.SpatialReference(wkt=raster_original.GetProjection())
+    options = gdal.WarpOptions(format="GTiff", # format="VRT",
+                               outputBounds=outputBounds,
+                               # srcSRS = "EPSG:4326", dstSRS = "EPSG:4326",
+                               outputType = gdal.GDT_Float32,
+                               resampleAlg = 'near'
+                               )    
+    ds = gdal.Warp(path_after_warp, path_before_warp, options=options)
+    del ds
