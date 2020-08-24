@@ -294,5 +294,42 @@ def set_index_for_loc(df, column=None, index=None):
         df = df.sort_index()
     return df
 
+def load_s1_flood_nonflood_dataframe(root_df, p=None, strip_id=None):
+    """
+    Load flood or nonflood dataframe (can apply to s1a and s2b)
 
+    Parameters
+    ----------
+    root_df: str
+        root directory of flood or nonflood dataftame.
+    p: str or list of string (optional), default None
+        p for filter.
+    strip_id: str or list of string (optional), default None
+        strip_id for filter.
+    
+    Examples
+    --------
+    >>> load_s1_flood_nonflood_dataframe(root_mapping, p="30", strip_id=None)
+    >>> load_s1_flood_nonflood_dataframe(root_mapping, p=["30", "32"], strip_id="305")
+    >>> load_s1_flood_nonflood_dataframe(root_mapping, p=None, strip_id="402")
+    
+    Returns
+    -------
+    Concatenated flood or nonflood dataframe
+    """
+    if type(strip_id) != list:
+        strip_id = [strip_id]
+    if type(p) != list:
+        p = [p]
+    
+    list_df = []
+    for file in os.listdir(root_df):
+        file_p = file.split(".")[0].split("_")[-2][1:]
+        file_strip_id = file.split(".")[0].split("_")[-1][1:]
+        
+        if (file_p in p or p[0] is None) and (file_strip_id in strip_id or strip_id[0] is None):
+            list_df.append(pd.read_parquet(os.path.join(root_df, file)))
+    
+    df = pd.concat(list_df, ignore_index=True)
+    return df
 
