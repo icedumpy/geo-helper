@@ -115,7 +115,41 @@ def create_tiff(path_save, im, projection, geotransform, drivername, list_band_n
 
     del output
     del driver
+    
+def create_vrt(path_save, list_path_raster, list_band_name=None, src_nodata=None, dst_nodata=None):
+    """
+    Write raster from image (can use with gdal and rasterio raster).
 
+    Parameters
+    ----------
+    path_save: str
+        Virtual's save path.
+    list_band_name: list of string (optional), default None
+        List of the name of each band. Otherwise, blank band names.
+    src_nodata: int (optional), default None
+        Nodata value of the source raster.
+    dst_nodata: int (optional), default None
+        Nodata value of the virtual raster.
+        
+    Examples
+    --------
+    >>> create_vrt(path_save="ice.tif", list_path_raster=["raster1.tif", "raster2.tif"], list_band_name=["ice", "lnw"], src_nodata=0, dst_nodata=0)
+
+    Returns
+    -------
+    None
+    """
+    options = gdal.BuildVRTOptions(
+        separate=True,
+        srcNodata = src_nodata,
+        VRTNodata = dst_nodata
+    )
+    outds = gdal.BuildVRT(path_save, list_path_raster, options=options)
+    if list_band_name is not None:
+        for idx, band_name in enumerate(list_band_name):
+            outds.GetRasterBand(idx+1).SetDescription(band_name)
+    outds.FlushCache()
+    del outds
 
 def get_raster_date(raster, datetimetype):
     """
