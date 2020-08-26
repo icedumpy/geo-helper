@@ -187,7 +187,7 @@ def get_raster_date(raster, datetimetype):
 
     return np.array(raster_date)
 
-def gdal_band_description(raster):
+def gdal_descriptions(raster):
     """
     The same as raster.descriptions in rasterio.
 
