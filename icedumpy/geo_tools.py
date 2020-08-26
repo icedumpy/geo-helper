@@ -187,6 +187,27 @@ def get_raster_date(raster, datetimetype):
 
     return np.array(raster_date)
 
+def gdal_band_description(raster):
+    """
+    The same as raster.descriptions in rasterio.
+
+    Parameters
+    ----------
+    raster: gdal raster
+        Raster data.
+
+    Examples
+    --------
+    >>>
+
+    Returns
+    -------
+    The list of descriptions for each dataset band.
+    """
+    band_description = [raster.GetRasterBand(i).GetDescription() for i in range(1, raster.RasterCount+1)]
+    return band_description
+
+
 def convert_to_geodataframe(df, polygon_column='final_polygon', crs={'init':'epsg:4326'}, to_crs=None):
     """
     Convert string of polygon to REAL polygon (geometry).
