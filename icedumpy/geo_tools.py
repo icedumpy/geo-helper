@@ -34,7 +34,7 @@ def plot_vminmax(img, vminmax, ax=None):
     return fig, ax
 
 
-def create_tiff(path_save, im, projection, geotransform, drivername, list_band_name=None, nodata=-9999, channel_first=True, dtype=gdal.GDT_Float32):
+def create_tiff(path_save, im, projection, geotransform, drivername, list_band_name=None, nodata=0, channel_first=True, dtype=gdal.GDT_Float32):
     """
     Write raster from image (can use with gdal and rasterio raster).
 
@@ -52,7 +52,7 @@ def create_tiff(path_save, im, projection, geotransform, drivername, list_band_n
         Name of gdal driver ex. "GTiff", "ENVI" from https://gdal.org/drivers/raster/index.html
     list_band_name: list of string (optional), default None
         List of the name of each band. Otherwise, blank band's name.
-    nodata: int (optional), default -9999
+    nodata: int (optional), default 0
         Nodata value of the raster.
     channel_first: boolean (optional), default True
         Image is channel first or not.
