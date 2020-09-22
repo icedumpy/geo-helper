@@ -8,9 +8,9 @@ from osgeo import gdal
 import rasterio
 import matplotlib.pyplot as plt
 
-
 def create_polygon_from_wkt(wkt_polygon, crs="epsg:4326", to_crs=None):
     """
+    This function is for pyproj version2++
     Create shapely polygon from string (wkt format) "MULTIPOLYGON(((...)))"
     https://gis.stackexchange.com/questions/127427/transforming-shapely-polygon-and-multipolygon-objects/127432#127432
 
@@ -37,28 +37,12 @@ def create_polygon_from_wkt(wkt_polygon, crs="epsg:4326", to_crs=None):
     """
     polygon = wkt.loads(wkt_polygon)
     if to_crs is not None:
-        if crs == "epsg:4326":
-            if to_crs == "epsg:32647":
-                project_47 = pyproj.Transformer.from_crs(
-                    'epsg:4326',   # source coordinate system
-                    'epsg:32647',  # destination coordinate system
-                    always_xy=True # Must have
-                ).transform                
-                polygon = transform(project_47, polygon)
-            elif to_crs == "epsg:32648":
-                project_48 = pyproj.Transformer.from_crs(
-                    'epsg:4326',   # source coordinate system
-                    'epsg:32648',  # destination coordinate system
-                    always_xy=True # Must have
-                ).transform 
-                polygon = transform(project_48, polygon)
-        else:
-            project = pyproj.Transformer.from_crs(
-                crs,     # source coordinate system
-                to_crs,  # destination coordinate system
-                always_xy=True # Must have
-            ).transform
-            polygon = transform(project, polygon)
+        project = pyproj.Transformer.from_crs(
+            crs,     # source coordinate system ex. 'epsg:4326'
+            to_crs,  # destination coordinate system ex. 'epsg:32647'
+            always_xy=True # Must have
+        ).transform
+        polygon = transform(project, polygon)
     return polygon
 
 def plot_vminmax(img, vminmax, ax=None):
