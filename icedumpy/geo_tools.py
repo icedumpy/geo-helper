@@ -8,6 +8,21 @@ from osgeo import gdal
 import rasterio
 import matplotlib.pyplot as plt
 
+try:
+    PROJECT_47 = pyproj.Transformer.from_crs(
+        'epsg:4326',   # source coordinate system
+        'epsg:32647',  # destination coordinate system
+        always_xy=True # Must have
+    ).transform
+    
+    PROJECT_48 = pyproj.Transformer.from_crs(
+        'epsg:4326',   # source coordinate system
+        'epsg:32648',  # destination coordinate system
+        always_xy=True # Must have
+    ).transform 
+except:
+    pass
+
 def create_polygon_from_wkt(wkt_polygon, crs="epsg:4326", to_crs=None):
     """
     This function is for pyproj version2++
@@ -37,13 +52,55 @@ def create_polygon_from_wkt(wkt_polygon, crs="epsg:4326", to_crs=None):
     """
     polygon = wkt.loads(wkt_polygon)
     if to_crs is not None:
-        project = pyproj.Transformer.from_crs(
-            crs,     # source coordinate system ex. 'epsg:4326'
-            to_crs,  # destination coordinate system ex. 'epsg:32647'
-            always_xy=True # Must have
-        ).transform
-        polygon = transform(project, polygon)
+        if crs == "epsg:4326":
+            if to_crs == "epsg:32647":
+                polygon = transform(PROJECT_47, polygon)
+            elif to_crs == "epsg:32648":
+                polygon = transform(PROJECT_48, polygon)
+        else:
+            project = pyproj.Transformer.from_crs(
+                crs,     # source coordinate system
+                to_crs,  # destination coordinate system
+                always_xy=True # Must have
+            ).transform
+            polygon = transform(project, polygon)
     return polygon
+
+def get_pixel_location_from_coords(x, y, geotransform):
+    """
+    Find which pixel of the raster belongs to the input (x, y).
+    
+    Parameters
+    ----------
+    x: float
+        Longitude or Easting(utm).
+    y: float
+        Latitude or Northing(utm).
+    geotransform: numpy array
+        Geotransform of the raster
+    
+    Examples
+    --------
+    >>> get_pixel_location_from_coords(101.15, 14.32, raster.get_transform())
+    >>> get_pixel_location_from_coords(101.15, 14.32, raster.GetGeoTransform())
+
+    Returns
+    -------
+    col, row positions
+    """
+
+    ''' x : lon/easting
+        y : lat/northing
+        geotransform : geo transform of raster
+        boundary_position : upper left (UL) / lower right (LR) 
+        boundary_position is used to improve the precision of the offset x, y of masked image (rasterio.mask.mask(all_touch=True))'''
+
+    divided_by = (geotransform[1]*geotransform[5])-(geotransform[2]-geotransform[4])
+    pixel_x = ((geotransform[5]*(x-geotransform[0]))-(geotransform[2]*(x-geotransform[3])))/divided_by
+    pixel_y = ((geotransform[1]*(y-geotransform[3]))-(geotransform[4]*(y-geotransform[0])))/divided_by
+    pixel_x = int(np.floor(pixel_x))
+    pixel_y = int(np.floor(pixel_y))
+    return pixel_x, pixel_y # col, row
 
 def plot_vminmax(img, vminmax, ax=None):
     """
