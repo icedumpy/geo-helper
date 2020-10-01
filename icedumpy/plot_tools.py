@@ -33,8 +33,8 @@ def plot_roc_curve(ax, model, x, y, label, color='b-'):
     auc = metrics.auc(fpr, tpr)
     ax.plot(fpr, tpr, color, label=f"{label} (AUC = {auc:.4f})")
     ax.plot(fpr, fpr, "--")
-    ax.set_xlabel("False Alarm")
-    ax.set_ylabel("Detection")
+    ax.set_xlabel("False Positive Rate")
+    ax.set_ylabel("True Positive Rate")
 
     return ax, y_predict_prob, fpr, tpr, thresholds, auc
 
