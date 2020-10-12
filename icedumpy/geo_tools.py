@@ -102,33 +102,6 @@ def get_pixel_location_from_coords(x, y, geotransform):
     pixel_y = int(np.floor(pixel_y))
     return pixel_x, pixel_y # col, row
 
-def plot_vminmax(img, vminmax, ax=None):
-    """
-    Plot image with nanpercentile cut.
-
-    Parameters
-    ----------
-    img: 2D-numpy array
-        Image array.
-    vmin: tuple
-        Tuple of (min percent, max percent).
-    ax: matplotlib suplots ax (optional), default None
-        axis for plot    
-    
-    Examples
-    --------
-    >>> plot_vminmax(img, vminmax=(2, 98))
-
-    Returns
-    -------
-    matplotlib fig and ax
-    """
-    vmin, vmax = np.nanpercentile(img, vminmax)
-    if ax is None:
-        fig, ax = plt.subplots()
-    ax.imshow(img, vmin=vmin, vmax=vmax)
-    return fig, ax
-
 
 def create_tiff(path_save, im, projection, geotransform, drivername, list_band_name=None, nodata=0, channel_first=True, dtype=gdal.GDT_Float32):
     """
