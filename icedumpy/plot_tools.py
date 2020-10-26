@@ -67,7 +67,7 @@ def set_roc_plot_template(ax):
     
     return ax
 
-def plot_vminmax(img, vminmax=(2, 98), ax=None):
+def plot_vminmax(img, vminmax=(2, 98), ax=None, cmap=None):
     """
     Plot image with nanpercentile cut.
 
@@ -79,6 +79,8 @@ def plot_vminmax(img, vminmax=(2, 98), ax=None):
         Tuple of (min percent, max percent).
     ax: matplotlib suplots ax (optional), default None
         Axis for plot.
+    cmap: matplotlib color map (optional), default None
+        cmap for imshow.
     
     Examples
     --------
@@ -91,8 +93,8 @@ def plot_vminmax(img, vminmax=(2, 98), ax=None):
     vmin, vmax = np.nanpercentile(img, vminmax)
     if ax is None:
         fig, ax = plt.subplots()
-        ax.imshow(img, vmin=vmin, vmax=vmax)
+        ax.imshow(img, vmin=vmin, vmax=vmax, cmap=cmap)
         return fig, ax
     else:
-        ax.imshow(img, vmin=vmin, vmax=vmax)
+        ax.imshow(img, vmin=vmin, vmax=vmax, cmap=cmap)
         return ax
