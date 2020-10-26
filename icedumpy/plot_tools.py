@@ -59,7 +59,7 @@ def set_roc_plot_template(ax):
     ax
     """
     ax.set_xticks(np.arange(-0.05, 1.05, 0.05))
-    ax.set_yticks(np.arange(0, 1., 0.1))
+    ax.set_yticks(np.arange(0, 1.05, 0.1))
     ax.set_xlim(left=-0.05, right=1.05)
     ax.set_ylim(bottom=-0.05, top=1.05)
     ax.grid()
@@ -91,5 +91,8 @@ def plot_vminmax(img, vminmax=(2, 98), ax=None):
     vmin, vmax = np.nanpercentile(img, vminmax)
     if ax is None:
         fig, ax = plt.subplots()
-    ax.imshow(img, vmin=vmin, vmax=vmax)
-    return fig, ax
+        ax.imshow(img, vmin=vmin, vmax=vmax)
+        return fig, ax
+    else:
+        ax.imshow(img, vmin=vmin, vmax=vmax)
+        return ax
