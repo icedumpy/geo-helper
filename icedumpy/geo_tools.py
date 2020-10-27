@@ -4,9 +4,9 @@ import geopandas as gpd
 import pyproj
 from shapely import wkt
 from shapely.ops import transform
+import osgeo
 from osgeo import gdal
 import rasterio
-import matplotlib.pyplot as plt
 
 try:
     PROJECT_47 = pyproj.Transformer.from_crs(
@@ -220,41 +220,43 @@ def create_vrt(path_save, list_path_raster, list_band_name=None, src_nodata=None
     outds.FlushCache()
     del outds
 
-def get_raster_date(raster, datetimetype):
+def get_raster_date(raster, string_format="%Y%m%d", start_index=0):
     """
-    Get band's date from each band of raster.
+    Convert from string of date to datetime. 
+    # String format must be one of these formats 
+    1. "%Y%m%d"
+    2. "%d-%m-%Y"
+    3. "%Y-%m-%d"
 
     Parameters
     ----------
-    raster: gdal raster or rasterio raster
-        Raster data.
-    datetimetype: str
-        Want return to be 'date' or 'datetime' format.
-
+    raster: osgeo.gdal.Dataset or rasterio.io.DatasetReader
+        Raster.
+    string_format: string (optional), default "%Y%m%d"
+        String format for datetime.datetime.strptime.
+    start_index: uint (optional), default 0.
+        Index of the first character.
+    
     Examples
     --------
-    >>> get_raster_date(rasterio.open(path_raster), datetimetype='date', dtype='rasterio')
+    >>> get_raster_date(raster, string_format="%Y%m%d", start_index=8)
+        get_raster_date(raster, string_format="%Y-%m-%d", start_index=0)
 
     Returns
+    Numpy array of datetime (dtype='datetime64[ns]')
     -------
-    Numpy array of raster date/datetime
+    
     """
-
-    if type(raster) == rasterio.io.DatasetReader:
-        try:
-            raster_date = [datetime.datetime(int(item[-8:-4]), int(item[-4:-2]), int(item[-2:])) for item in raster.descriptions]
-        except:
-            raster_date = [datetime.datetime(int(item.split('-')[0]), int(item.split('-')[1]), int(item.split('-')[2])) for item in raster.descriptions]
-    elif type(raster) == gdal.Dataset:
-        try:
-            raster_date = [datetime.datetime(int(raster.GetRasterBand(i+1).GetDescription()[-8:-4]), int(raster.GetRasterBand(i+1).GetDescription()[-4:-2]), int(raster.GetRasterBand(i+1).GetDescription()[-2:])) for i in range(raster.RasterCount)]
-        except:
-            raster_date = [datetime.datetime(int(raster.GetRasterBand(i+1).GetDescription().split('-')[0]), int(raster.GetRasterBand(i+1).GetDescription().split('-')[1]), int(raster.GetRasterBand(i+1).GetDescription().split('-')[2])) for i in range(raster.RasterCount)]
-
-    if datetimetype=='date':
-        raster_date = [item.date() for item in raster_date]
-
-    return np.array(raster_date)
+    if "-" in string_format:
+        string_len = 10
+    else:
+        string_len = 8
+    
+    if type(raster) == osgeo.gdal.Dataset:
+        raster_date = [datetime.datetime.strptime(raster.GetRasterBand(band+1).GetDescription()[start_index:start_index+string_len], string_format) for band in range(raster.RasterCount)]
+    elif type(raster) == rasterio.io.DatasetReader:
+        raster_date = [datetime.datetime.strptime(name[start_index:start_index+string_len], string_format) for name in raster.descriptions]
+    return np.array(raster_date, dtype='datetime64[ns]')
 
 def gdal_descriptions(raster):
     """
