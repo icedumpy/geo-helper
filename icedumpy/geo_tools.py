@@ -223,10 +223,6 @@ def create_vrt(path_save, list_path_raster, list_band_name=None, src_nodata=None
 def get_raster_date(raster, string_format="%Y%m%d", start_index=0):
     """
     Convert from string of date to datetime. 
-    # String format must be one of these formats 
-    1. "%Y%m%d"
-    2. "%d-%m-%Y"
-    3. "%Y-%m-%d"
 
     Parameters
     ----------
@@ -247,10 +243,7 @@ def get_raster_date(raster, string_format="%Y%m%d", start_index=0):
     -------
     
     """
-    if "-" in string_format:
-        string_len = 10
-    else:
-        string_len = 8
+    string_len = len(string_format)+2
     
     if type(raster) == osgeo.gdal.Dataset:
         raster_date = [datetime.datetime.strptime(raster.GetRasterBand(band+1).GetDescription()[start_index:start_index+string_len], string_format) for band in range(raster.RasterCount)]
