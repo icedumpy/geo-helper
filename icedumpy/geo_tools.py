@@ -1,12 +1,13 @@
-import datetime
-import numpy as np
-import geopandas as gpd
+import os
+import osgeo
 import pyproj
+import datetime
+import rasterio
+import numpy as np
+from osgeo import gdal
+import geopandas as gpd
 from shapely import wkt
 from shapely.ops import transform
-import osgeo
-from osgeo import gdal
-import rasterio
 
 try:
     PROJECT_47 = pyproj.Transformer.from_crs(
@@ -339,3 +340,65 @@ def gdal_warp(path_after_warp, path_before_warp, outputBounds):
                                )    
     ds = gdal.Warp(path_after_warp, path_before_warp, options=options)
     del ds
+
+def gdal_rasterize(path_shp, path_rasterized,
+                   xRes,
+                   yRes,
+                   outputBounds=None,
+                   format="GTiff",
+                   outputType="Byte",
+                   burnValues=1,
+                   allTouched=False,
+                   noData=0):
+    """
+    Rasterize shapefile
+    
+    Parameters
+    ----------
+    path_shp: str
+        Path of shapefile.
+    path_rasterized: str
+        Path of rasterized shapefile (save path).
+    xRes: float
+        Resolution of x-axis (For EPSG:4326 m/111320).
+    yRes: float
+        Resolution of y-axis (For EPSG:4326 m/111320).
+    format: str (optional), default "GTiff"
+        Name of gdal driver ex. "GTiff", "ENVI" from https://gdal.org/drivers/raster/index.html
+    outputBounds: tuple of list (optional), default None (will use shapfile bounds instead)
+        Boundaries of rasterized raster (minx, miny, maxx, maxy).
+    outputType: str (optional), default "Byte"
+        Output data type of rasterized raster.
+    burnValues: int/float (optional), default 1
+        Burn value (rasterized pixel value).
+    allTouched: boolean (optional), default False
+        Want allTouched or not.
+    noData: int/float (optional), default 0
+        No-data value of rasterized raster.
+    
+    Examples
+    --------
+    >>> 
+
+    Returns
+    -------
+    none
+    """
+    if outputBounds is None:
+        gdf = gpd.read_file(path_shp)
+        outputBounds = gdf.total_bounds
+    gdal_rasterize_cmd = f"gdal_rasterize -l {os.path.basename(path_shp).split('.')[0]}"
+    gdal_rasterize_cmd += f" -burn {burnValues:f}"
+    gdal_rasterize_cmd += f" -tr {xRes} {yRes}"
+    gdal_rasterize_cmd += f" -a_nodata {noData}"
+    gdal_rasterize_cmd += f" -te {' '.join(list(map(str, outputBounds)))}"
+    gdal_rasterize_cmd += f" -ot {outputType}"
+    gdal_rasterize_cmd += f" -of {format}"
+    if allTouched:
+        gdal_rasterize_cmd += " -at"
+    gdal_rasterize_cmd += f' "{path_shp}" "{path_rasterized}"'
+    result_merge_cmd = os.system(gdal_rasterize_cmd)
+    assert result_merge_cmd == 0
+    return gdal_rasterize_cmd
+
+
