@@ -347,7 +347,8 @@ def gdal_rasterize(path_shp, path_rasterized,
                    outputBounds=None,
                    format="GTiff",
                    outputType="Byte",
-                   burnValues=1,
+                   burnValues=None,
+                   burnField=None,
                    allTouched=False,
                    noData=0):
     """
@@ -367,10 +368,12 @@ def gdal_rasterize(path_shp, path_rasterized,
         Name of gdal driver ex. "GTiff", "ENVI" from https://gdal.org/drivers/raster/index.html
     outputBounds: tuple of list (optional), default None (will use shapfile bounds instead)
         Boundaries of rasterized raster (minx, miny, maxx, maxy).
-    outputType: str (optional), default "Byte"
+    outputType: str (optional), default "Byte" (Byte, UInt16, Int16, UInt32, Int32, Float32, Float64, CInt16, CInt32, CFloat32 and CFloat64)
         Output data type of rasterized raster.
-    burnValues: int/float (optional), default 1
+    burnValues: int/float (optional), default None
         Burn value (rasterized pixel value).
+    burnField: str (optional), default None
+        Column name (rasterized pixel value).
     allTouched: boolean (optional), default False
         Want allTouched or not.
     noData: int/float (optional), default 0
@@ -388,7 +391,10 @@ def gdal_rasterize(path_shp, path_rasterized,
         gdf = gpd.read_file(path_shp)
         outputBounds = gdf.total_bounds
     gdal_rasterize_cmd = f"gdal_rasterize -l {os.path.basename(path_shp).split('.')[0]}"
-    gdal_rasterize_cmd += f" -burn {burnValues:f}"
+    if burnValues is not None:
+        gdal_rasterize_cmd += f" -burn {burnValues:f}"
+    elif burnField is not None:
+        gdal_rasterize_cmd += f" -a {burnField}"
     gdal_rasterize_cmd += f" -tr {xRes} {yRes}"
     gdal_rasterize_cmd += f" -a_nodata {noData}"
     gdal_rasterize_cmd += f" -te {' '.join(list(map(str, outputBounds)))}"
