@@ -41,6 +41,44 @@ def plot_roc_curve(model, x, y, label, color='b-', ax=None):
 
     return ax, y_predict_prob, fpr, tpr, thresholds, auc
 
+def plot_precision_recall_curve(model, x, y, label, color='b-', ax=None):
+    """
+    Plot Precision Recall curve.
+
+    Parameters
+    ----------
+    model: sklearn's model
+        Model for predict x.
+    x: numpy array (N, M)
+        Input data to the model.
+    y: numpy array (N,)
+        Input label.
+    label: str
+        Plot label.
+    color: str
+        Line color.
+    ax: matplotlib suplots ax (optional), default None
+        Axis for plot.
+
+    Examples
+    --------
+    >>> 
+
+    Returns
+    -------
+    ax, y_predict_prob, recall, precision, thresholds, auc
+    """
+    if ax is None:
+        fig, ax = plt.subplots()
+    y_predict_prob = model.predict_proba(x)
+    precision, recall, thresholds = metrics.precision_recall_curve(y, y_predict_prob[:, 1])
+    auc = metrics.auc(recall, precision)
+    ax.plot(recall, precision, color, label=f"{label} (AUC = {auc:.4f})")
+    ax.plot(recall, recall, "--")
+    ax.set_xlabel("Recall (True Positive Rate)")
+    ax.set_ylabel("Precision")
+    return ax, y_predict_prob, precision, recall, thresholds, auc
+
 def set_roc_plot_template(ax):
     """
     Set template of ROC
