@@ -203,7 +203,7 @@ def create_vrt(path_save, list_path_raster, list_band_name=None, src_nodata=None
         
     Examples
     --------
-    >>> create_vrt(path_save="ice.tif", list_path_raster=["raster1.tif", "raster2.tif"], list_band_name=["ice", "lnw"], src_nodata=0, dst_nodata=0)
+    >>> create_vrt(path_save="ice.vrt", list_path_raster=["raster1.tif", "raster2.tif"], list_band_name=["ice", "lnw"], src_nodata=0, dst_nodata=0)
 
     Returns
     -------
@@ -342,8 +342,10 @@ def gdal_warp(path_after_warp, path_before_warp, outputBounds):
     del ds
 
 def gdal_rasterize(path_shp, path_rasterized,
-                   xRes,
-                   yRes,
+                   xRes=None,
+                   yRes=None,
+                   width=None,
+                   height=None,
                    outputBounds=None,
                    format="GTiff",
                    outputType="Byte",
@@ -360,10 +362,14 @@ def gdal_rasterize(path_shp, path_rasterized,
         Path of shapefile.
     path_rasterized: str
         Path of rasterized shapefile (save path).
-    xRes: float
-        Resolution of x-axis (For EPSG:4326 m/111320).
-    yRes: float
-        Resolution of y-axis (For EPSG:4326 m/111320).
+    xRes: float (optional), default None
+        Resolution of x-axis (For EPSG:4326 m/111320) (Can't use with width, height').
+    yRes: float (optional), default None 
+        Resolution of y-axis (For EPSG:4326 m/111320) (Can't use with width, height').
+    width: int (optional), default None
+        Width pixels (Can't use with xRes, yRes')
+    height: int (optional), default None
+        Height pixels (Can't use with xRes, yRes')
     format: str (optional), default "GTiff"
         Name of gdal driver ex. "GTiff", "ENVI" from https://gdal.org/drivers/raster/index.html
     outputBounds: tuple of list (optional), default None (will use shapfile bounds instead)
@@ -395,7 +401,10 @@ def gdal_rasterize(path_shp, path_rasterized,
         gdal_rasterize_cmd += f" -burn {burnValues:f}"
     elif burnField is not None:
         gdal_rasterize_cmd += f" -a {burnField}"
-    gdal_rasterize_cmd += f" -tr {xRes} {yRes}"
+    if (width is None) and (height is None):
+        gdal_rasterize_cmd += f" -tr {xRes} {yRes}"
+    else:
+        gdal_rasterize_cmd += f" -ts {width} {height}"
     gdal_rasterize_cmd += f" -a_nodata {noData}"
     gdal_rasterize_cmd += f" -te {' '.join(list(map(str, outputBounds)))}"
     gdal_rasterize_cmd += f" -ot {outputType}"
