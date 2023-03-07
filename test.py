@@ -1,4 +1,4 @@
-import icedumpy
+import helper
 import pandas as pd
 import time
 # =============================================================================
@@ -20,7 +20,7 @@ for i in range(1000):
 print(f"Time usage (.loc unsorted): {(time.process_time() - t):.4f} s")
 
 # .loc sorted
-df = icedumpy.df_tools.set_index_for_loc(df, "index")
+df = helper.df_tools.set_index_for_loc(df, "index")
 t = time.process_time()
 for i in range(1000):
     df.loc["ice"]

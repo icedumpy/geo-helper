@@ -1,10 +1,12 @@
 from setuptools import setup
-setup(name='icedumpy',
-      version='0.0',
-      description="Ice's first package",
-      url='#',
-      author='Pongporamat',
-      author_email='pongporamat.c@ku.th',
-      license='None',
-      packages=['icedumpy'],
-      zip_safe=False)
+setup(
+    name='geo-helper',
+    version='0.0',
+    description="Helper package for PIER project",
+    url='#',
+    author='Pongporamat',
+    author_email='pongporamat.c@gmail.com',
+    license='None',
+    packages=['geo-helper'],
+    zip_safe=False
+)
