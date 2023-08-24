@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
     
 
 setup(
-    name='geohelper',
+    name='geo-helper',
     version='0.0',
     description="Helper package for PIER project",
     long_description=long_description,
