@@ -1,12 +1,12 @@
 from setuptools import setup
 setup(
-    name='geo-helper',
+    name='geohelper',
     version='0.0',
     description="Helper package for PIER project",
     url='#',
     author='Pongporamat',
     author_email='pongporamat.c@gmail.com',
     license='None',
-    packages=['geo-helper'],
+    packages=['geohelper'],
     zip_safe=False
 )
