@@ -10,7 +10,7 @@ setup(
     description="Helper package for PIER project",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/icedumpy/geohelper",
+    url="https://github.com/icedumpy/geo-helper",
     author='Pongporamat',
     author_email='pongporamat.c@gmail.com',
     packages=find_packages(),    
