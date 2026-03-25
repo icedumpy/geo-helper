@@ -1,1 +1,3 @@
-__pycache__geo_helper.egg-info/
+__pycache__/
+*.egg-info/
+.claude/
