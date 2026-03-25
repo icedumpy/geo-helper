@@ -18,7 +18,25 @@ def create_tiff(
     nodata: float | None = 0,
     dtype: str | None = None,
 ) -> None:
-    """Write a georeferenced raster from a numpy array."""
+    """Write a georeferenced raster from a numpy array.
+
+    Parameters
+    ----------
+    path : str | Path
+        Output file path.
+    array : np.ndarray
+        2D (height, width) or 3D (bands, height, width) array.
+    transform : Affine
+        Rasterio affine transform.
+    crs : str
+        Coordinate reference system (e.g. "EPSG:4326").
+    band_names : list[str] | None
+        Optional description for each band.
+    nodata : float | None
+        Nodata value. Set to None to omit.
+    dtype : str | None
+        Output dtype. Defaults to the array's dtype.
+    """
     if array.ndim == 2:
         array = array[np.newaxis, :, :]
 
@@ -43,7 +61,23 @@ def create_vrt(
     src_nodata: float | None = None,
     dst_nodata: float | None = None,
 ) -> None:
-    """Create a virtual raster (VRT) from multiple source rasters. Requires GDAL."""
+    """Create a virtual raster (VRT) from multiple source rasters.
+
+    Requires GDAL.
+
+    Parameters
+    ----------
+    output_path : str | Path
+        Output VRT file path.
+    input_paths : list[str | Path]
+        List of input raster file paths.
+    band_names : list[str] | None
+        Optional description for each band.
+    src_nodata : float | None
+        Source nodata value.
+    dst_nodata : float | None
+        Destination nodata value.
+    """
     try:
         from osgeo import gdal
     except ImportError:
@@ -69,7 +103,23 @@ def warp(
     resolution: float | None = None,
     resampling: str = "nearest",
 ) -> None:
-    """Reproject and optionally clip a raster."""
+    """Reproject and optionally clip a raster.
+
+    Parameters
+    ----------
+    src_path : str | Path
+        Input raster path.
+    dst_path : str | Path
+        Output raster path.
+    dst_crs : str
+        Target CRS (e.g. "EPSG:32647").
+    bounds : tuple | None
+        Optional output bounds (left, bottom, right, top) in dst_crs.
+    resolution : float | None
+        Optional output resolution in dst_crs units.
+    resampling : str
+        Resampling method name (e.g. "nearest", "bilinear").
+    """
     from rasterio.enums import Resampling
     from rasterio.warp import calculate_default_transform, reproject
 
@@ -111,7 +161,27 @@ def rasterize(
     dtype: str = "uint8",
     nodata: int = 0,
 ) -> None:
-    """Rasterize a vector file."""
+    """Rasterize a vector file.
+
+    Parameters
+    ----------
+    vector_path : str | Path
+        Path to vector file (shapefile, GeoJSON, etc.).
+    output_path : str | Path
+        Output raster path.
+    resolution : float | tuple[float, float]
+        Pixel size. Single float for square pixels, or (x_res, y_res).
+    bounds : tuple | None
+        Output bounds (minx, miny, maxx, maxy). Defaults to vector bounds.
+    crs : str | None
+        Output CRS. Defaults to vector CRS.
+    burn_value : int
+        Value to burn into rasterized pixels.
+    dtype : str
+        Output numpy dtype string.
+    nodata : int
+        Nodata value.
+    """
     try:
         import geopandas as gpd
     except ImportError:
@@ -150,7 +220,18 @@ def rasterize(
 
 
 def get_band_descriptions(path: str | Path) -> tuple[str, ...]:
-    """Read band description strings from a raster file."""
+    """Read band description strings from a raster file.
+
+    Parameters
+    ----------
+    path : str | Path
+        Raster file path.
+
+    Returns
+    -------
+    tuple[str, ...]
+        Band descriptions.
+    """
     with rasterio.open(path) as src:
         return src.descriptions
 
@@ -158,7 +239,20 @@ def get_band_descriptions(path: str | Path) -> tuple[str, ...]:
 def get_band_dates(
     path: str | Path, date_format: str | None = None
 ) -> list[datetime] | list[str]:
-    """Extract dates from raster band descriptions."""
+    """Extract dates from raster band descriptions.
+
+    Parameters
+    ----------
+    path : str | Path
+        Raster file path.
+    date_format : str | None
+        strptime format string. If None, returns raw description strings.
+
+    Returns
+    -------
+    list[datetime] | list[str]
+        Parsed dates if date_format given, otherwise raw strings.
+    """
     descriptions = get_band_descriptions(path)
     if date_format is None:
         return [d or "" for d in descriptions]

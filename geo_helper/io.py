@@ -3,7 +3,7 @@
 from pathlib import Path
 
 
-def save_model(model: object, path: "str | Path") -> None:
+def save_model(model: object, path: str | Path) -> None:
     """Persist a scikit-learn model to disk via joblib.
 
     Parameters
@@ -26,7 +26,7 @@ def save_model(model: object, path: "str | Path") -> None:
     dump(model, path)
 
 
-def load_model(path: "str | Path") -> object:
+def load_model(path: str | Path) -> object:
     """Load a scikit-learn model from disk via joblib.
 
     Parameters
@@ -49,7 +49,7 @@ def load_model(path: "str | Path") -> object:
     return load(path)
 
 
-def save_h5(data: dict, path: "str | Path") -> None:
+def save_h5(data: dict, path: str | Path) -> None:
     """Save a dict of arrays to an HDF5 file.
 
     Parameters
@@ -71,7 +71,7 @@ def save_h5(data: dict, path: "str | Path") -> None:
             f.create_dataset(key, data=value)
 
 
-def load_h5(path: "str | Path") -> dict:
+def load_h5(path: str | Path) -> dict:
     """Load an HDF5 file into a dict of arrays.
 
     Parameters
