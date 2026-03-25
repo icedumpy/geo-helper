@@ -21,7 +21,10 @@ def kappa(confusion_matrix: np.ndarray) -> float:
     row_sums = confusion_matrix.sum(axis=1)
     col_sums = confusion_matrix.sum(axis=0)
     expected = np.dot(row_sums, col_sums)
-    return (n * observed - expected) / (n ** 2 - expected)
+    denom = n ** 2 - expected
+    if denom == 0:
+        return 1.0 if n * observed == expected else 0.0
+    return (n * observed - expected) / denom
 
 
 def fuzzy_confusion_matrix(
@@ -50,8 +53,8 @@ def fuzzy_confusion_matrix(
     np.ndarray
         2x2 fuzzy confusion matrix.
     """
-    y_true = np.asarray(y_true, dtype=np.float64)
-    y_pred = np.asarray(y_pred, dtype=np.float64)
+    y_true = np.array(y_true, dtype=np.float64, copy=True)
+    y_pred = np.array(y_pred, dtype=np.float64, copy=True)
 
     if thresholds is not None:
         low, high = thresholds

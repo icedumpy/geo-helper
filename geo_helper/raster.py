@@ -256,4 +256,8 @@ def get_band_dates(
     descriptions = get_band_descriptions(path)
     if date_format is None:
         return [d or "" for d in descriptions]
-    return [datetime.strptime(d, date_format) for d in descriptions]
+    return [
+        datetime.strptime(d, date_format)
+        for d in descriptions
+        if d is not None
+    ]
