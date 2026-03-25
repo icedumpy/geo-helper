@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geo-helper"
+version = "1.0.0"
+description = "General-purpose Python geospatial helper utilities"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [{ name = "Pongporamat", email = "pongporamat.c@gmail.com" }]
+readme = "README.md"
+dependencies = ["numpy", "rasterio"]
+
+[project.optional-dependencies]
+geo = ["geopandas", "shapely", "pyproj", "GDAL"]
+ml = ["scikit-learn", "joblib", "h5py"]
+plot = ["matplotlib", "scikit-learn"]
+all = ["geo-helper[geo]", "geo-helper[ml]", "geo-helper[plot]"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
